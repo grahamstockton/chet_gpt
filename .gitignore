@@ -1,0 +1,6 @@
+/target
+Secrets.toml
+Cargo.lock
+.DS_Store
+/debug/
+personality.txt

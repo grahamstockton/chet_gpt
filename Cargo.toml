@@ -1,0 +1,15 @@
+[package]
+name = "chetbot"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+shuttle-serenity = "0.45.0"
+tokio = "1.35.1"
+poise = "0.6.1-rc1"
+poise_macros = "0.6.1-rc1"
+shuttle-runtime = "0.45.0"
+anyhow = "1.0.86"
+chatgpt_rs = "1.2.3"
+futures = "0.3.30"
+async-openai = "0.23.1"
