@@ -12,6 +12,7 @@ use async_openai::{
     Client,
 };
 
+/// Wrapper for OpenAI client
 #[derive(Debug)]
 pub struct ChetGPTWrapper {
     client: Client<OpenAIConfig>,
@@ -34,7 +35,7 @@ respond in character to the discord messages being sent to you. The information 
 about you. Rather than simply repeating these facts, try to act like Chet would without contradicting \
 the provided facts. Speak less enthusiastically and more ironically and cynically than ChatGPT normally would.";
 
-// This wrapper creates an assistant that reads a file "../files/personality.txt" and responds as if it
+// This wrapper holds an assistant that reads a file "../files/personality.txt" and responds as if it
 // is a person named "Chet" who has the personality described by that file
 impl ChetGPTWrapper {
     pub async fn new() -> Self {
@@ -126,7 +127,7 @@ impl ChetGPTWrapper {
             })
             .await?;
 
-        //create a run for the thread
+        // create a run for the thread
         let run_request = CreateRunRequestArgs::default()
             .assistant_id(&self.assistant_id)
             .parallel_tool_calls(false)
@@ -139,44 +140,52 @@ impl ChetGPTWrapper {
             .await
             .expect("failed to create run");
 
-        //wait for the run to complete
+        // wait for the run to complete
         loop {
-            //retrieve the run
+
+            // retrieve the run
             let run = self
                 .client
                 .threads()
                 .runs(&self.thread_id)
                 .retrieve(&run.id)
                 .await?;
-            //check the status of the run
+
+            // check the status of the run
             match run.status {
                 RunStatus::Completed => {
-                    //retrieve the response from the run
+
+                    // retrieve the response from the run
                     let response = self
                         .client
                         .threads()
                         .messages(&self.thread_id)
                         .list(&[("limit", "10")])
                         .await?;
-                    //get the message id from the response
+
+                    // get the message id from the response
                     let message_id = response.data.first().unwrap().id.clone();
-                    //get the message from the response
+
+                    // get the message from the response
                     let message = self
                         .client
                         .threads()
                         .messages(&self.thread_id)
                         .retrieve(&message_id)
                         .await?;
-                    //get the content from the message
+
+                    // get the content from the message
                     let content = message.content.first().unwrap();
-                    //get the text from the content
+
+                    // get the text from the content
                     let text = match content {
                         MessageContent::Text(text) => text.text.value.clone(),
                         MessageContent::ImageFile(_) | MessageContent::ImageUrl(_) => {
                             panic!("imaged are not expected in this example");
                         }
                     };
-                    //print the text
+
+                    // print the text
                     return Ok(text);
                 }
                 RunStatus::Failed => {
@@ -207,10 +216,12 @@ impl ChetGPTWrapper {
                     println!("> Run Incomplete");
                 }
             }
-            //wait for 1 second before checking the status again
+
+            // wait for 1 second before checking the status again
             tokio::time::sleep(tokio::time::Duration::from_secs(1)).await;
         }
 
+        //should never reach this point
         panic!("No response from GPT when conducting run");
     }
 }

@@ -1,6 +1,9 @@
 use crate::Context;
 use anyhow::{Error, Result};
 
+/// Poise command to call ChetGPT and get a response.
+/// This call is stateful, and will remember previous calls.
+/// Currently, state is only remember for the duration the bot is running.
 #[poise::command(slash_command)]
 pub async fn chet_gpt(
     ctx: Context<'_>,

@@ -15,6 +15,7 @@ type Context<'a> = poise::Context<'a, ChetGPTWrapper, Error>;
 */
 #[shuttle_runtime::main]
 async fn poise(#[Secrets] secret_store: SecretStore) -> ShuttleSerenity {
+
     // get discord token and api key from secret store
     let discord_token = secret_store
         .get("DISCORD_TOKEN")
@@ -39,6 +40,7 @@ async fn poise(#[Secrets] secret_store: SecretStore) -> ShuttleSerenity {
         })
         .setup(|ctx, _ready, framework| {
             Box::pin(async move {
+
                 // register commands
                 poise::builtins::register_globally(ctx, &framework.options().commands).await?;
 
